@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+venv/
+env/
+.env
+
+# Output files
+output.txt 
