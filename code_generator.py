@@ -4,6 +4,21 @@ class CodeGenerator:
         self.register_count = 0
         self.variables = {}  # Store variable locations
         self.var_values = {}  # Store variable values
+        
+        # Initialize variables with some values
+        self.var_values['y'] = 5
+        self.var_values['z'] = 3
+        self.var_values['a'] = 2
+        
+        # Create registers for initial variables
+        self.variables['y'] = self.new_register()
+        self.variables['z'] = self.new_register()
+        self.variables['a'] = self.new_register()
+        
+        # Load initial values
+        self.add_instruction(f'LOAD {self.variables["y"]}, {self.var_values["y"]}', f'Initialize y with {self.var_values["y"]}')
+        self.add_instruction(f'LOAD {self.variables["z"]}, {self.var_values["z"]}', f'Initialize z with {self.var_values["z"]}')
+        self.add_instruction(f'LOAD {self.variables["a"]}, {self.var_values["a"]}', f'Initialize a with {self.var_values["a"]}')
 
     def new_register(self):
         reg = f'R{self.register_count}'
@@ -64,4 +79,33 @@ class CodeGenerator:
             return result_reg, result
 
     def get_instructions(self):
-        return self.instructions 
+        return self.instructions
+
+    def evaluate_expression(self):
+        # Create AST for x = y + z * a
+        ast = {
+            'type': 'ASSIGNMENT',
+            'name': 'x',
+            'value': {
+                'type': 'BINARY_OP',
+                'op': '+',
+                'left': {
+                    'type': 'VARIABLE',
+                    'name': 'y'
+                },
+                'right': {
+                    'type': 'BINARY_OP',
+                    'op': '*',
+                    'left': {
+                        'type': 'VARIABLE',
+                        'name': 'z'
+                    },
+                    'right': {
+                        'type': 'VARIABLE',
+                        'name': 'a'
+                    }
+                }
+            }
+        }
+        
+        return self.generate(ast)

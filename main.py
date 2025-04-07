@@ -2,95 +2,53 @@ from lexer import Lexer
 from parser import Parser
 from code_generator import CodeGenerator
 
-def compile_equation(equation, output_file, generator):
+def compile_expression(x, y, z, generator):
+    # Fixed expression: result = x + y * z
+    expression = f"result = {x} + {y} * {z}"
+    
     try:
-        # Create the lexer
-        lexer = Lexer(equation)
-        
-        # Create the parser
+        lexer = Lexer(expression)
         parser = Parser(lexer)
-        
-        # Parse the equation into an AST
         ast = parser.parse()
-        
-        # Generate custom instructions
         result_reg = generator.generate(ast)
         
-        # If this was an assignment, store the result
-        if ast['type'] == 'ASSIGNMENT':
-            var_name = ast['name']
-            if var_name not in generator.variables:
-                generator.variables[var_name] = generator.new_register()
-            target_reg = generator.variables[var_name]
-            generator.add_instruction(f'MOV {target_reg}, {result_reg}', f'Store into variable {var_name}')
-        
-        # Return the generated instructions
-        return generator.get_instructions()
+        instructions = generator.get_instructions()
+        return instructions
     except Exception as e:
         print(f"Error during compilation: {str(e)}")
         return []
 
-def print_help():
-    print("\nAvailable commands:")
-    print("1. var = value    (e.g., 'x = 5' to assign value to variable)")
-    print("2. expression     (e.g., 'x + y * 2' to evaluate expression)")
-    print("3. vars           (to show all defined variables)")
-    print("4. help          (to show this help message)")
-    print("5. exit          (to quit the program)")
-    print("\nNote: Variable names can only contain letters and numbers")
-    print("Supported operators: +, -, *, /")
-
-def show_variables(generator):
-    if not generator.variables:
-        print("\nNo variables defined yet")
-        return
-    
-    print("\nDefined variables:")
-    print("-" * 20)
-    for var_name in generator.variables:
-        value = generator.var_values.get(var_name, "undefined")
-        print(f"{var_name} = {value}")
-
 def main():
-    print("\nWelcome to the Interactive Equation Compiler!")
+    print("\nFixed Expression Compiler: result = x + y * z")
     print("=" * 50)
-    print_help()
     
-    generator = CodeGenerator()
-    
-    while True:
-        try:
-            # Get user input
-            equation = input("\nEnter an equation (or command): ").strip()
-            
-            # Handle commands
-            if equation.lower() == 'exit':
-                print("Goodbye!")
-                break
-            elif equation.lower() == 'help':
-                print_help()
-                continue
-            elif equation.lower() == 'vars':
-                show_variables(generator)
-                continue
-            elif not equation:
-                continue
-            
-            # Compile the equation
-            print("\nCompiling:", equation)
+    try:
+        # Get input values
+        x = int(input("Enter value for x: "))
+        y = int(input("Enter value for y: "))
+        z = int(input("Enter value for z: "))
+        
+        generator = CodeGenerator()
+        
+        print("\nCompiling: result = x + y * z")
+        print("-" * 40)
+        
+        instructions = compile_expression(x, y, z, generator)
+        
+        if instructions:
+            print("\nGenerated Instructions:")
             print("-" * 40)
+            for instruction in instructions:
+                print(instruction)
             
-            instructions = compile_equation(equation, None, generator)
-            
-            if instructions:
-                print("\nGenerated Instructions:")
-                print("-" * 40)
-                for instruction in instructions:
-                    print(instruction)
+            # Show final result
+            if 'result' in generator.var_values:
+                print(f"\nFinal Result: {generator.var_values['result']}")
                 
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            print("Type 'help' for usage information")
+    except ValueError:
+        print("Error: Please enter valid integer values")
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 if __name__ == "__main__":
-    main() 
+    main()
