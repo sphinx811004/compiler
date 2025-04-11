@@ -108,17 +108,20 @@ a = 2, b = 3, c = 4
 
 ### ✅ 1. Generate ANTLR files  
 ```bash
-java -cp "lib/antlr-4.13.1-complete.jar" org.antlr.v4.Tool -visitor src/Expr.g4
+java -cp "lib/antlr-4.13.1-complete.jar" org.antlr.v4.Tool -visitor src/Expr.g4 -o src
+
 ```
 
 ### ✅ 2. Compile Java files  
 ```bash
 javac -cp ".;lib/antlr-4.13.1-complete.jar" src/*.java
+
 ```
 
 ### ✅ 3. Run the compiler  
 ```bash
-java -cp ".;lib/antlr-4.13.1-complete.jar" src/CompilerMain
+java -cp ".;lib/antlr-4.13.1-complete.jar;src" CompilerMain
+
 ```
 
 ---
